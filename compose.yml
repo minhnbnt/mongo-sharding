@@ -1,0 +1,42 @@
+x-constrains:
+  - &mongodb-image docker.io/mongodb/mongodb-community-server:8.0.4-ubi8
+
+services:
+  mongodb-router:
+    image: *mongodb-image
+    command: mongos --configdb config0/mongodb-config0:27017 --port 27017 --bind_ip_all
+
+    ports:
+      - 27017:27017
+    depends_on:
+      - mongodb-config0
+
+  mongodb-config0:
+    image: *mongodb-image
+    command: mongod --configsvr --replSet config0 --port 27017 --dbpath /data/db
+
+    ports:
+      - 27018:27017
+    volumes:
+      - ./db/conf0:/data/db
+    depends_on:
+      - mongodb-shard0
+      - mongodb-shard1
+
+  mongodb-shard0:
+    image: *mongodb-image
+    command: mongod --shardsvr --replSet shard0 --port 27017 --dbpath /data/db
+
+    ports:
+      - 27019:27017
+    volumes:
+      - ./db/shard0:/data/db
+
+  mongodb-shard1:
+    image: *mongodb-image
+    command: mongod --shardsvr --replSet shard1 --port 27017 --dbpath /data/db
+
+    ports:
+      - 27020:27017
+    volumes:
+      - ./db/shard1:/data/db

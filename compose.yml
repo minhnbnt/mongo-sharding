@@ -19,9 +19,6 @@ services:
       - 27018:27017
     volumes:
       - ./db/conf0:/data/db
-    depends_on:
-      - mongodb-shard0
-      - mongodb-shard1
 
   mongodb-shard0:
     image: *mongodb-image

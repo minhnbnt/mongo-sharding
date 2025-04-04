@@ -2,22 +2,16 @@
 
 ## Hướng dẫn setup
 
-Yêu cầu: `docker` (hoặc `podman`), `docker-compose`, `node`, `pnpm`.
+Yêu cầu: `ansible`, `docker` (hoặc `podman`), `docker-compose`.
 
-**Bước 1**: Chạy các tiến trình với câu lệnh:
+**Bước 1**: Chạy các containers với câu lệnh:
 
 ```sh
 docker compose up -d
 ```
 
-**Bước 2**: Cài đặt các dependencies cho config script với câu lệnh:
+**Bước 2** Thực hiện cấu hình sharding với câu lệnh:
 
 ```sh
-pnpm i --frozen-lockfile
-```
-
-**Bước 3**: Chạy script để tự động setup sharding bằng câu lệnh:
-
-```sh
-node index.js
+ansible-playbook playbooks/init-shards.yml
 ```

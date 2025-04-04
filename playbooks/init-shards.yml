@@ -1,0 +1,41 @@
+# vi: ft=yaml.ansible ts=2
+---
+- name: Init Sharding
+  hosts: localhost
+
+  tasks:
+    - name: Init shard0
+      community.mongodb.mongodb_replicaset:
+        login_host: localhost
+        login_port: 27019
+        replica_set: shard0
+        validate: false
+        members: mongodb-shard0:27017
+
+    - name: Init shard1
+      community.mongodb.mongodb_replicaset:
+        login_host: localhost
+        login_port: 27020
+        replica_set: shard1
+        validate: false
+        members: mongodb-shard1:27017
+
+    - name: Init config0
+      community.mongodb.mongodb_replicaset:
+        login_host: localhost
+        login_port: 27018
+        replica_set: config0
+        validate: false
+        members: mongodb-config0:27017
+
+    - name: Add shard0 to router
+      community.mongodb.mongodb_shard:
+        login_host: localhost
+        login_port: 27017
+        shard: shard0/mongodb-shard0:27017
+
+    - name: Add shard1 to router
+      community.mongodb.mongodb_shard:
+        login_host: localhost
+        login_port: 27017
+        shard: shard1/mongodb-shard1:27017

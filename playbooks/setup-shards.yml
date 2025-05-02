@@ -1,0 +1,36 @@
+# vi: ft=yaml.ansible ts=2
+---
+- name: Init Sharding
+  hosts: localhost
+
+  vars_files:
+    - "../variables/specs.yml"
+
+  tasks:
+    - name: Init shards
+      community.mongodb.mongodb_replicaset:
+        replica_set: "{{ replica_set_name }}"
+        members: "{{ item.value.members }}"
+
+        login_host: "{{ control_host.host }}"
+        login_port: "{{ control_host.port }}"
+        validate: false
+
+      vars:
+        control_host: "{{ item.value.control }}"
+        replica_set_name: "{{ item.key }}"
+
+      loop: "{{ configs | combine(shards) | dict2items }}"
+
+    - name: Add shards to router
+      community.mongodb.mongodb_shard:
+        login_host: "{{ router.host }}"
+        login_port: "{{ router.port }}"
+
+        shard: "{{ shard_name }}/{{ control_host.host }}:{{ control_host.port }}"
+
+      vars:
+        control_host: "{{ item.value.control }}"
+        shard_name: "{{ item.key }}"
+
+      loop: "{{ shards | dict2items }}"

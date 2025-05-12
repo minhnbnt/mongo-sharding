@@ -1,0 +1,15 @@
+# vi: ft=yaml.ansible ts=2
+---
+- name: Init Database
+  hosts: localhost
+
+  vars_files:
+    - "../variables/specs.yml"
+
+  tasks:
+    - name: Init database
+      community.mongodb.mongodb_shell:
+        login_host: "{{ router.host }}"
+        login_port: "{{ router.port }}"
+
+        file: "../scripts/shardConfig.js"
